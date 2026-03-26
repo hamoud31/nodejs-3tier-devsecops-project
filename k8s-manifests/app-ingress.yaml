@@ -12,7 +12,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: aadi-aws.in
+    - host: hbdevops.online
       http:
         paths:
           - path: /
