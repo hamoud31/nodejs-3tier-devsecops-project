@@ -241,7 +241,8 @@ jobs:
       full_image: ${{ needs.docker-build.outputs.full_image }}
     steps:
     - uses: actions/checkout@v4
-    - run: trivy image "${{ needs.docker-build.outputs.full_image }}" \
+    - run: | 
+        trivy image "${{ needs.docker-build.outputs.full_image }}" \
         --format table \
         --severity HIGH,CRITICAL \
         --ignore-unfixed \
