@@ -228,7 +228,7 @@ jobs:
         name: server-trivy-fs-json-report
         path: server-trivy-fs-report.json
         if-no-files-found: warn
-
+        
     - name: Upload Server Trivy TABLE report
       uses: actions/upload-artifact@v4
       with:
