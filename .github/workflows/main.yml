@@ -235,7 +235,6 @@ jobs:
         name: server-trivy-fs-table-report
         path: server-trivy-fs-report.txt
         if-no-files-found: warn
-
         path: checkov-dockerfile-report.json
         if-no-files-found: warn
 
