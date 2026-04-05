@@ -38,9 +38,7 @@ jobs:
           name: gitleaks-report
           path: gitleaks-report.json
           if-no-files-found: warn
-
 # Checkov scan for Terraform configs
-  
   checkov-terraform:
     name: Checkov Terraform Scan
     runs-on: self-hosted
@@ -50,19 +48,16 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
-
-    - name: Install Checkov
-      run: pip install checkov
+    - name: Verify Checkov installation
+      run: |
+        checkov --version
+        which checkov
 
     - name: Run Checkov Terraform scan
       run: |
         checkov -d . \
-          --framework terraform \
-          --output json > checkov-terraform-report.json || true
+        --framework terraform \
+        --output json > checkov-terraform-report.json || true
 
     - name: Upload Checkov Terraform report
       uses: actions/upload-artifact@v4
@@ -70,10 +65,7 @@ jobs:
         name: checkov-terraform-report
         path: checkov-terraform-report.json
         if-no-files-found: warn
-
-
-# Checkov scan for Kubernetes manifests
-  
+  # Checkov scan for Kubernetes manifests
   checkov-k8s:
     name: Checkov Kubernetes Scan
     runs-on: self-hosted
@@ -83,19 +75,16 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
-
-    - name: Install Checkov
-      run: pip install checkov
+    - name: Verify Checkov installation
+      run: |
+        checkov --version
+        which checkov
 
     - name: Run Checkov Kubernetes scan
       run: |
-        checkov -d . \
-          --framework kubernetes \
-          --output json > checkov-k8s-report.json || true
+       checkov -d . \
+        --framework kubernetes \
+        --output json > checkov-k8s-report.json || true
 
     - name: Upload Checkov Kubernetes report
       uses: actions/upload-artifact@v4
@@ -103,36 +92,44 @@ jobs:
         name: checkov-k8s-report
         path: checkov-k8s-report.json
         if-no-files-found: warn
-
-# Checkov scan for Dockerfiles
  
-  checkov-dockerfile:
-    name: Checkov Dockerfile Scan
-    runs-on: self-hosted
-    needs: gitleaks-scan
+# Checkov scan for Dockerfiles
 
-    steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
+ checkov-dockerfile:
+  name: Checkov Dockerfile Scan
+  runs-on: self-hosted
+  needs: gitleaks-scan
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
+  steps:
+  - name: Checkout source code
+    uses: actions/checkout@v4
 
-    - name: Install Checkov
-      run: pip install checkov
+  - name: Verify Checkov installation
+    run: |
+      checkov --version
+      which checkov
 
-    - name: Run Checkov Dockerfile scan
-      run: |
-        checkov -d . \
-          --framework dockerfile \
-          --output json > checkov-dockerfile-report.json || true
+  - name: Run Checkov Dockerfile scan
+    run: |
+      checkov -d . \
+        --framework dockerfile \
+        --output json > checkov-dockerfile-report.json || true
 
-    - name: Upload Checkov Dockerfile report
-      uses: actions/upload-artifact@v4
-      with:
-        name: checkov-dockerfile-report
+  - name: Upload Checkov Dockerfile report
+    uses: actions/upload-artifact@v4
+    with:
+      name: checkov-dockerfile-report
+      path: checkov-dockerfile-report.json
+      if-no-files-found: warn
+
+
+   
+
+
+    
+
+  
+
 # Trivy FS scan for client directory
 
   client-trivy-fs:
