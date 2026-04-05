@@ -33,7 +33,7 @@ spec:
   - metadata:
       name: mysql-storage
     spec:
-      storageClassName: manual
+      storageClassName: gp3
       accessModes:
         - ReadWriteOnce
       resources:
