@@ -134,6 +134,7 @@ jobs:
       with:
         name: checkov-dockerfile-report
 # Trivy FS scan for client directory
+
   client-trivy-fs:
     name: Client Trivy FS Scan
     runs-on: self-hosted
@@ -142,12 +143,6 @@ jobs:
     steps:
     - name: Checkout source code
       uses: actions/checkout@v4
-
-    - name: Install Trivy
-      uses: aquasecurity/setup-trivy@v0.2.6
-      with:
-        version: latest
-        cache: true
 
     - name: Verify Trivy installation
       run: |
@@ -184,6 +179,7 @@ jobs:
         name: client-trivy-fs-table-report
         path: client-trivy-fs-report.txt
         if-no-files-found: warn
+
 # Trivy FS scan for server directory
   server-trivy-fs:
     name: Server Trivy FS Scan
