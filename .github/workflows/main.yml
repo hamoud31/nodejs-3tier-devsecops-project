@@ -304,8 +304,8 @@ jobs:
       continue-on-error: true
 # Run server unit tests after linting
 
-   server-test:
-    name: Server Test
+  server-test:
+    name: Server test
     runs-on: self-hosted
     needs: server-lint
 
@@ -357,9 +357,10 @@ client-build:
           client/build
           client/dist
         if-no-files-found: ignore
+
 # Build Docker image and generate metadata
 
-docker-build:
+ docker-build:
   name: Docker Build
   runs-on: self-hosted
   needs:
@@ -372,12 +373,15 @@ docker-build:
   steps:
     - uses: actions/checkout@v4
 
-    - id: meta
+    - name: Set image metadata
+      id: meta
       run: |
         echo "image_tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
         echo "full_image=${IMAGE_NAME}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
 
-    - run: docker build -t "${{ steps.meta.outputs.full_image }}" .
+    - name: Build Docker image
+      run: docker build -t "${{ steps.meta.outputs.full_image }}" .
+
 
 # Scan built Docker image for vulnerabilities using Trivy
 
@@ -455,21 +459,24 @@ update-k8s-manifest:
   runs-on: self-hosted
   needs: docker-push
   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
   steps:
-    - uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+  - uses: actions/checkout@v4
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
 
-    - run: |
-        sed -i "s|\(hamoud07/nodejs-app:\).*|\1${GITHUB_SHA}|g" k8s-manifests/app-deployment.yaml
+  - name: Update image tag in manifest
+    run: |
+      sed -i "s|\(hamoud07/nodejs-app:\).*|\1${GITHUB_SHA}|g" k8s-manifests/app-deployment.yaml
 
-    - run: cat k8s-manifests/app-deployment.yaml
+  - name: Show updated manifest
+    run: cat k8s-manifests/app-deployment.yaml
 
-    - run: |
-        git config user.name "hamoud31"
-        git config user.email "hamoudblal@gmail.com"
-        git add k8s-manifests/app-deployment.yaml
-        git diff --cached --quiet || git commit -m "ci: update deployment image to ${GITHUB_SHA} [skip ci]"
-        git push
+  - name: Commit updated manifest
+    run: |
+      git config user.name "hamoud31"
+      git config user.email "hamoudblal@gmail.com"
+      git add k8s-manifests/app-deployment.yaml
+      git diff --cached --quiet || git commit -m "ci: update deployment image to ${GITHUB_SHA} [skip ci]"
+      git push
+
 
